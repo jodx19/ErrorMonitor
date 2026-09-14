@@ -61,6 +61,14 @@ try
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
+
+        options.AddPolicy("AllowVercel",
+            policy =>
+            {
+                policy.WithOrigins("https://your-angular-app.vercel.app") // سيتم استبداله لاحقاً برابط Vercel الفعلي
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
     });
 
     // Global Exception Handler (.NET 8)
@@ -163,6 +171,9 @@ try
     app.UseMiddleware<UserEnricherMiddleware>();
 
     app.UseAuthentication();
+    
+    // أضف هذا السطر قبل app.UseAuthorization();
+    app.UseCors("AllowVercel");
     app.UseAuthorization();
 
     app.MapControllers();
