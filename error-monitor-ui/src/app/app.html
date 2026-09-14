@@ -1,0 +1,214 @@
+<div class="dashboard">
+
+  <!-- ══ Header ══════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-content">
+
+      <div class="logo">
+        <div class="logo-icon">🛡️</div>
+        <div class="logo-text">
+          <h1>ErrorMonitor</h1>
+          <p>Full Stack .NET 8 + Angular — CV Project</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- JWT Status -->
+        @if (jwtToken()) {
+          <div class="jwt-pill active">
+            <span class="pulse-dot green"></span>
+            JWT Active
+            <button class="clear-token" (click)="clearToken()" title="مسح التوكن">✕</button>
+          </div>
+        } @else {
+          <div class="jwt-pill inactive">
+            <span>🔓 No Token</span>
+          </div>
+        }
+
+        <a href="http://localhost:5341" target="_blank" class="seq-pill">
+          📊 Seq
+        </a>
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          API :5151
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ══ Main Grid ════════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ┌── Card: Endpoints ──────────────────────────────────┐ -->
+    <div class="glass-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="title-icon purple">🧪</span>
+            اختبار الـ Endpoints
+          </div>
+          <div class="card-subtitle">
+            Test · Auth · Health Check — الأخطاء تُسجَّل في Seq مع UserId
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Group: Test -->
+        <div class="ep-group-label">🔬 API Tests</div>
+        <div class="ep-list">
+          @for (ep of endpoints.slice(0,5); track ep.path) {
+            <div class="ep-item">
+              <span class="ep-path">{{ ep.desc }}</span>
+              <button class="btn {{ ep.btnClass }}"
+                      [disabled]="loading() === ep.path"
+                      (click)="callEndpoint(ep)">
+                @if (loading() === ep.path) { <span class="btn-spinner"></span> }
+                {{ ep.label }}
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Group: Auth -->
+        <div class="ep-group-label">🔐 Authentication (JWT)</div>
+        <div class="ep-list">
+          @for (ep of endpoints.slice(5,7); track ep.path) {
+            <div class="ep-item" [ngClass]="{'ep-auth-required': ep.authRequired && !jwtToken()}">
+              <span class="ep-path">{{ ep.desc }}</span>
+              @if (ep.authRequired && !jwtToken()) {
+                <span class="ep-lock-hint">⚠️ سجل الدخول أولاً</span>
+              } @else {
+                <button class="btn {{ ep.btnClass }}"
+                        [disabled]="loading() === ep.path"
+                        (click)="callEndpoint(ep)">
+                  @if (loading() === ep.path) { <span class="btn-spinner"></span> }
+                  {{ ep.label }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Group: Health -->
+        <div class="ep-group-label">❤️ Health Checks</div>
+        <div class="ep-list">
+          @for (ep of endpoints.slice(7); track ep.path) {
+            <div class="ep-item">
+              <span class="ep-path">{{ ep.desc }}</span>
+              <button class="btn {{ ep.btnClass }}"
+                      [disabled]="loading() === ep.path"
+                      (click)="callEndpoint(ep)">
+                @if (loading() === ep.path) { <span class="btn-spinner"></span> }
+                {{ ep.label }}
+              </button>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ┌── Card: Live Log ───────────────────────────────────┐ -->
+    <div class="glass-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="title-icon cyan">📋</span>
+            <span class="results-header">
+              سجل الاستجابات
+              <span class="badge">{{ results().length }}</span>
+            </span>
+          </div>
+          <div class="card-subtitle">ProblemDetails · JWT Claims · Health Status</div>
+        </div>
+        @if (results().length > 0) {
+          <button class="btn btn-ghost" (click)="clearResults()">🗑️ مسح</button>
+        }
+      </div>
+
+      <div class="card-body">
+        @if (results().length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">🚀</span>
+            <p>اضغط أي زر لاختبار الـ API</p>
+            <p class="empty-hint">ابدأ بـ "تسجيل الدخول" للحصول على JWT</p>
+          </div>
+        }
+        <div class="result-log">
+          @for (r of results(); track $index) {
+            <div class="log-entry">
+              <div class="log-top">
+                <span class="log-method">{{ r.endpoint.includes('auth') ? 'AUTH' : r.endpoint.includes('health') ? 'HEALTH' : 'GET' }}</span>
+                <span class="log-path">/{{ r.endpoint }}</span>
+                <span class="status-chip" [ngClass]="{
+                    's-success': r.statusCode === 200,
+                    's-error':   r.statusCode === 0 || r.statusCode >= 500,
+                    's-warning': r.statusCode > 0 && r.statusCode < 500 && r.statusCode !== 200
+                  }">
+                  {{ r.statusCode === 0 ? 'CORS' : r.statusCode }}
+                </span>
+                <span class="log-time">{{ r.time }}ms</span>
+              </div>
+              <pre class="log-body">{{ r.response | json }}</pre>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ┌── Card: Architecture ───────────────────────────────┐ -->
+    <div class="glass-card arch-section">
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            <span class="title-icon green">🏗️</span>
+            Architecture Flow
+          </div>
+          <div class="card-subtitle">دورة الطلب من الـ UI حتى تسجيله في Seq مع UserId</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="arch-flow">
+          <div class="arch-node n-angular">
+            <span class="node-icon">⚡</span>
+            <span class="node-name">Angular</span>
+            <span class="node-sub">HttpInterceptor + JWT</span>
+          </div>
+          <div class="arch-connector"><div class="conn-line"></div></div>
+          <div class="arch-node n-dotnet">
+            <span class="node-icon">⚙️</span>
+            <span class="node-name">.NET 8 API</span>
+            <span class="node-sub">GlobalExceptionHandler</span>
+          </div>
+          <div class="arch-connector"><div class="conn-line"></div></div>
+          <div class="arch-node n-serilog">
+            <span class="node-icon">📝</span>
+            <span class="node-name">Serilog</span>
+            <span class="node-sub">UserId Enricher</span>
+          </div>
+          <div class="arch-connector"><div class="conn-line"></div></div>
+          <div class="arch-node n-seq">
+            <span class="node-icon">🔍</span>
+            <span class="node-name">Seq</span>
+            <span class="node-sub">Filter by UserId</span>
+          </div>
+        </div>
+
+        <!-- Features Tags -->
+        <div class="feature-tags">
+          <span class="tag">Custom Exceptions</span>
+          <span class="tag">ProblemDetails RFC 7807</span>
+          <span class="tag">JWT Authentication</span>
+          <span class="tag">Health Checks</span>
+          <span class="tag">UserId Logging</span>
+          <span class="tag">Serilog Enrichers</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

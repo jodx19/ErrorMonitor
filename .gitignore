@@ -1,0 +1,37 @@
+# ==================================
+# General
+# ==================================
+.DS_Store
+Thumbs.db
+
+# ==================================
+# Visual Studio / IDEs
+# ==================================
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# ==================================
+# .NET / Backend
+# ==================================
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+Logs/
+*.log
+
+# ==================================
+# Angular / Node.js
+# ==================================
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+npm-debug.log
+yarn-error.log
+coverage/
