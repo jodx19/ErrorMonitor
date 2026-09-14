@@ -65,7 +65,7 @@ try
         options.AddPolicy("AllowVercel",
             policy =>
             {
-                policy.WithOrigins("https://your-angular-app.vercel.app") // سيتم استبداله لاحقاً برابط Vercel الفعلي
+                policy.WithOrigins("https://error-monitor-ui.vercel.app") // رابط Vercel الفعلي
                       .AllowAnyHeader()
                       .AllowAnyMethod();
             });
