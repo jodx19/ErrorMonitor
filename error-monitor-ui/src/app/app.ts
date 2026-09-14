@@ -29,7 +29,7 @@ interface Endpoint {
   styleUrl: './app.scss'
 })
 export class App {
-  private readonly apiBase = 'http://localhost:5151/api';
+  private readonly apiBase = 'http://errormonitor-api.runasp.net/api';
 
   results  = signal<TestResult[]>([]);
   loading  = signal<string | null>(null);
@@ -81,7 +81,7 @@ export class App {
 
     // بناء الـ URL الصحيح (health endpoint مختلف)
     const url = ep.path === 'health'
-      ? `http://localhost:5151/health`
+      ? `http://errormonitor-api.runasp.net/health`
       : `${this.apiBase}/${ep.path}`;
 
     // إضافة Authorization header لو الـ endpoint يحتاجه
