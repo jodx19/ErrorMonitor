@@ -102,10 +102,17 @@ ng serve -o
 
 ## 📸 نظرة على النظام
 
-*(يمكنك إضافة صور من المشروع هنا قبل الرفع على GitHub)*
-- [صورة للـ Dashboard المظلم]
-- [صورة للخطأ 500 وهو يظهر في Snackbar]
-- [صورة للسجل في Seq Dashboard]
+### 1. الواجهة الرئيسية (Premium Dashboard)
+![Dashboard](docs/dashboard.png)
+
+### 2. واجهة Seq لتتبع السجلات والأخطاء
+![Seq Logs](docs/seq-logs.png)
+
+### 3. معالجة الأخطاء الذكية (500 Internal Server Error)
+![Error Snackbar](docs/error-snackbar.png)
+
+### 4. انقطاع الاتصال (Connection Error)
+![Connection Error](docs/connection-error.png)
 
 ---
 *Developed as a Full-Stack CV Project to demonstrate enterprise-grade error handling and centralized logging capabilities.*
