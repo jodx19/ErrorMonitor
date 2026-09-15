@@ -52,23 +52,16 @@ try
     builder.Services.AddOpenApi();
     builder.Services.AddHttpClient(); // مطلوب لـ SeqHealthCheck
 
-    // CORS — السماح لـ Angular Dev Server
+    // CORS — السماح للواجهة الأمامية (المحلية و Vercel)
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AngularDevPolicy", policy =>
+        options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins("http://localhost:4200", "https://error-monitor-ui.vercel.app")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Optional: Usually good for Auth
         });
-
-        options.AddPolicy("AllowVercel",
-            policy =>
-            {
-                policy.WithOrigins("https://error-monitor-ui.vercel.app") // رابط Vercel الفعلي
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
-            });
     });
 
     // Global Exception Handler (.NET 8)
@@ -157,7 +150,7 @@ try
     });
 
     // CORS يجب قبل Authentication
-    app.UseCors("AngularDevPolicy");
+    app.UseCors("AllowFrontend");
 
     // Exception Handler في أول الـ Pipeline
     app.UseExceptionHandler();
@@ -172,8 +165,6 @@ try
 
     app.UseAuthentication();
     
-    // أضف هذا السطر قبل app.UseAuthorization();
-    app.UseCors("AllowVercel");
     app.UseAuthorization();
 
     app.MapControllers();
